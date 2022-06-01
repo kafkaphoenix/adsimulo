@@ -1,99 +1,75 @@
-"""Agent which manages a planetary system."""
-
+from dataclasses import dataclass, field
 from time import sleep
+from typing import Dict, Optional
 
 from adsimulo.config import PIONERS
-from adsimulo.planetary_system.planetary_system import PlanetarySystem
-from adsimulo.utils import clear_shell
+from adsimulo.universe.planet import Planet
+from adsimulo.universe.system import System
+from adsimulo.utils import display
 
 
-class Eva():
-    """Simulation manager unit."""
-
-    universe = {}
-
-    def __init__(self, mode, debug, seed, year):
-        """Initialize simulation project parameters for the planetary system.
-
-        Initialize eva systems which the given arguments.
-
-        :param mode: 0 cpu mode, 1 one player vs cpu mode
-        :type mode: int
-        :param debug: Print debug information
-        :type debug: bool
-        :param seed: Initialize the random number generator
-        :type seed: int
-        :param year: Year when the simulation will end
-        :type year: int
-        """
-        self._mode = mode
-        self._debug = debug
-        self._seed = seed
-        self._year = year
-        self._system = None
+@dataclass
+class Eva:
+    seed: int
+    galaxy: Optional[Dict[str, System]] = field(default_factory=dict)
 
     @staticmethod
-    def big_bang():
-        """Boom!."""
-        print('Initializing universe...')
+    def lore():
+        print("Initializing universe...")
         sleep(0.3)
-        print('Increasing simulation speed...')
+        print("Increasing simulation speed...")
         sleep(0.3)
-        print('Superfast inflation...')
+        print("Superfast inflation...")
         sleep(0.3)
-        print('Post inflation...')
+        print("Post inflation...")
         sleep(0.3)
-        print('Cooling cosmos...')
+        print("Cooling cosmos...")
         sleep(0.3)
-        print('Atom era...')
+        print("Atom era...")
         sleep(0.3)
-        print('Entering into Galaxy era...')
+        print("Entering into Galaxy era...")
         sleep(0.3)
-        print('Fast-forwarding first galaxies and planetary systems...')
+        print("Fast-forwarding first galaxies and planetary systems...")
         sleep(0.3)
-        print('First dying stars...')
+        print("First dying stars...")
         sleep(0.3)
-        print('Slowing time...')
-
-    def deploy(self):
-        """Deploy Eva and start planetary system generation."""
+        print("Slowing time...")
         sleep(0.3)
-        print('Cooling proto-star...')
+        print("Cooling proto-star...")
         sleep(0.3)
-        print('Cooling proto-planets...')
-        self._planetary_system_formation()
+        print("Cooling proto-planets...")
         sleep(0.3)
         print("Analyzing planets' habitability...")
         sleep(0.3)
-        habitable_planets = self._find_habitable_planets()
+
+    def deploy(self) -> bool:
+        system = System(seed=self.seed)
+        habitable_planets = self._is_habitable(system)
         if not habitable_planets:
-            print('Failed to find habitable planets...')
+            print("Failed to find habitable planets...Retrying with another system")
             sleep(0.3)
             return False
-        type(self).galaxy[self._system.name] = self._system
-        for planet in habitable_planets:
+        self.galaxy[system.name] = system
+        for _, planet in habitable_planets.items():
             self._adam(PIONERS, planet)
         return True
 
-    def _planetary_system_formation(self):
-        """Create a planetary system with a star and planets."""
-        system = PlanetarySystem()
-        system.formation()
-        self._system = system
+    def _is_habitable(self, system: System):
+        return system.planets
 
-    def _find_habitable_planets(self):
-        """Return habitable planets."""
-        return []
-
-    def _adam(self, pioners, planet):
-        """Early backers."""
+    def _adam(self, pioners: int, planet: Planet):
+        pass
 
     def _born_civ(self):
-        """Born a new civilisation."""
+        pass
 
-    def display(self):
-        """Draw planet map."""
-        clear_shell()
+    def _display(self):
+        for _, system in self.galaxy.items():
+            display(system)
 
-    def hourglass(self):
-        """Release the sands of time."""
+    def loop(self, apocalypse: int):
+        year = 0
+        while year < apocalypse:
+            for _, system in self.galaxy.items():
+                display(system)
+            year += 1

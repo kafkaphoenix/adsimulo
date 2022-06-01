@@ -1,8 +1,6 @@
-"""Ad Simulo configuration parameters and logo."""
+LOGFILE_PATH = "logfile.txt"
 
-LOGFILE_PATH = 'logfile.txt'
-
-MENU_LOGO = ('''
+MENU_LOGO = """
 
 
    █████████       █████     █████████   ███                             ████
@@ -15,14 +13,15 @@ MENU_LOGO = ('''
 ░░░░░   ░░░░░  ░░░░░░░░     ░░░░░░░░░  ░░░░░ ░░░░░ ░░░ ░░░░░   ░░░░░░░░ ░░░░░  ░░░░░░
 
 
-''')  # noqa
+"""  # noqa
 
 HEIGHT = 20
 WIDTH = 50
 PIONERS = 10
 YEAR = 500
 SEED = 0
+DEBUG = False
 CPU_MODE = 0
 PLAYER_VS_CPU_MODE = 1
-GAME_MODES = ('CPU mode', 'Player vs CPU mode')
+GAME_MODES = ("CPU mode", "Player vs CPU mode")
 PLANETARY_SYSTEMS_SAMPLE = 1

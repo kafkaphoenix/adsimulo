@@ -1,26 +1,36 @@
-"""Miscellaneous adsimulo methods."""
-
 import os
-from platform import system
 
-from adsimulo.config import LOGFILE_PATH
+from termcolor import colored
 
-
-def log(line):
-    """Append output stream to a file."""
-    with open(LOGFILE_PATH, 'a') as file:
-        file.write(''.join(line + '\n'))
+from adsimulo.civ.contansts import CellState
+from adsimulo.universe.constants import biome_colors
+from adsimulo.universe.system import System
 
 
 def clamp(val, nmin=0, nmax=1):
-    """Restrict value between nmin and nmax."""
     return max(nmin, min(val, nmax))
 
 
 def clear_shell():
-    """Clear shell."""
+    from platform import system
+
     os_system = system()
-    if os_system == 'Windows':
-        os.system('cls')
+    if os_system == "Windows":
+        os.system("cls")
     else:
-        os.system('clear')
+        os.system("clear")
+
+
+def display(system: System):
+    clear_shell()
+    for _, planet in system.planets.items():
+        print(f"Year {planet.age}")
+        for lat in range(planet.height):
+            for long in range(planet.width):
+                biome = planet.terrain_grid[lat][long]
+                civ = planet.civ_grid[lat][long]
+                if civ != CellState.UNOCCUPIED.value:
+                    print(colored(civ, "red"), end="")
+                else:
+                    print(colored(biome, biome_colors[biome]), end="")
+            print("")

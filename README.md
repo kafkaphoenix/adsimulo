@@ -10,30 +10,26 @@
 
 ## Getting started
 
-The quickstart assumes that you have Python 3 up and running. The instructions below are written with Linux/POSIX in mind.
-
-If you're a MacOS user, it is presumed that you have installed python3 yourself somehow (e.g. using pyenv).
-If you're a Windows user, remember to use Scripts\activate.bat instead of .bin/activate.
+This quickstart assumes that you have python 3 and poetry up and running.
 
 ```
 # Installing:
-$ python3 -m venv .
-$ . bin/activate
-$ pip install -e .
+$ poetry install
 [..]
-Successfully installed adsimulo-0.1.0 [..]
+Installing the current project: adsimulo (0.1.0)
 
 # Starting the game
-$ adsimulo-run [options]
+$ poetry run adsimulo [options]
 
 # Debugging
-$ adsimulo-debug [options]
+$ poetry run adsimulo --debug
+
 ```
 
 Note that adsimulo's scripts will create whatever files they need to operate right in the directory
 where they're being called.
 Please check the [documentation](https://github.com/kafkaphoenix/adsimulo/blob/main/docs/scripts.md)
- for more information about script arguments.
+for more information about script arguments.
 
 ## Contributing:
 

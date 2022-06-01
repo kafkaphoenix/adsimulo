@@ -1,9 +1,7 @@
-"""Utils tests."""
 from adsimulo.utils import clamp
 
 
 def test_clamp_ok():
-    """Test clamp function."""
     upper_limit = 2
     lower_limit = -1
     ok_value = 0.5

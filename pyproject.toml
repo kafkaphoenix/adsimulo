@@ -1,0 +1,51 @@
+[tool.poetry]
+name = "adsimulo"
+version = "0.1.0"
+description = "Civilisation simulator on a procedural universe"
+license = "GPL-3.0-or-later"
+authors = ["kafkaphoenix <jaguilerapuerta@gmail.com>"]
+readme = "README.md"
+repository="https://github.com/kafkaphoenix/adsimulo/"
+documentation="https://github.com/kafkaphoenix/adsimulo/tree/main/docs/"
+keywords=["civilisation", "simulation", "simulator", "procedural"]
+classifiers=[
+    "Development Status :: 1 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Programming Language :: Python",
+]
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/kafkaphoenix/adsimulo/issues"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyfastnoisesimd = "^0.4.2"
+termcolor = "^1.1.0"
+numpy = "^1.22.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+black = "^22.3.0"
+isort = "^5.10.1"
+ipdb = "^0.13.9"
+pre-commit = "^2.19.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+adsimulo="adsimulo.scripts.run:main"
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
