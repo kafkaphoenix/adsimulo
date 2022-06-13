@@ -1,3 +1,5 @@
-from importlib.metadata import version
+from pathlib import Path
 
-__version__ = version(__package__)
+from single_source import get_version
+
+__version__ = get_version(__name__, Path(__file__).parent.parent)

@@ -18,11 +18,11 @@ $ poetry install
 [..]
 Installing the current project: adsimulo (0.1.0)
 
-# Starting the game
-$ poetry run adsimulo [options]
+# Running the game
+$ poetry run adsimulo [args]
 
 # Debugging
-$ poetry run adsimulo --debug
+$ poetry run adsimulo --d
 
 ```
 

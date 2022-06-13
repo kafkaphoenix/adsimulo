@@ -1,6 +1,7 @@
 import argparse
 
-from adsimulo.config import DEBUG, GAME_MODES, SEED, YEAR
+from adsimulo.scripts.constants import GameModes
+from adsimulo.settings import DEBUG_SETTINGS, GAME_SETTINGS, RANDOM_SETTINGS
 
 
 class DefaultArgumentParser(argparse.ArgumentParser):
@@ -11,34 +12,46 @@ class DefaultArgumentParser(argparse.ArgumentParser):
             "--debug",
             help="Enable debug mode",
             action="store_true",
-            default=DEBUG,
+            default=DEBUG_SETTINGS["DEBUG"],
         )
         self.add_argument(
             "-s",
             "--seed",
             help="Set seed to initialize the random number generator",
             type=int,
-            default=SEED,
+            default=RANDOM_SETTINGS["SEED"],
         )
         self.add_argument(
             "-y",
             "--year",
             help="Year when the simulation will stop",
             type=int,
-            default=YEAR,
+            default=GAME_SETTINGS["STOP"],
+        )
+        self.add_argument(
+            "-n",
+            "--noise",
+            help="Set noise",
+            type=str,
+            default=RANDOM_SETTINGS["NOISE"],
         )
 
 
-def select_mode() -> int:
+def game_mode() -> GameModes:
+    mode = None
     print("Welcome! Please select a game mode:\n")
-    print(f"0. {GAME_MODES[0]}\n")
-    print(f"1. {GAME_MODES[1]}\n")
-    mode = input()
-    mode = int(mode) if mode else -1
-    while mode != 0 and mode != 1:
-        print("Wrong input. Please select a game mode:\n")
-        print(f"0. {GAME_MODES[0]}\n")
-        print(f"1. {GAME_MODES[1]}\n")
-        mode = int(input())
-
+    while mode is None:
+        print(f"{GameModes.mode(GameModes.CPU_MODE)}. {GameModes.CPU_MODE}\n")
+        print(f"{GameModes.mode(GameModes.PLAYER_MODE)}. {GameModes.PLAYER_MODE}\n")
+        print(f"{GameModes.mode(GameModes.EXIT)}. {GameModes.EXIT}\n")
+        command = input()
+        match command.split():
+            case ["0"] | ["cpu"] | ["c"]:
+                mode = GameModes.CPU_MODE
+            case ["1"] | ["player"] | ["p"]:
+                mode = GameModes.PLAYER_MODE
+            case ["2"] | ["exit"] | ["e"]:
+                mode = GameModes.EXIT
+            case _:
+                print("Wrong mode, please try again\n")
     return mode

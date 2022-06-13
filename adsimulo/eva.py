@@ -1,17 +1,29 @@
-from dataclasses import dataclass, field
+import logging
+from dataclasses import dataclass
 from time import sleep
-from typing import Dict, Optional
+from typing import Optional
 
-from adsimulo.config import PIONERS
+from adsimulo.civ.civ import Civilisation
+from adsimulo.civ.contansts import CellState
+from adsimulo.civ.utils import filter2d, roll
+from adsimulo.compendium import Compendium
+from adsimulo.config import Config
+from adsimulo.scripts.constants import GameModes
+from adsimulo.universe.constants import Biomes
+from adsimulo.universe.galaxy import Galaxy
 from adsimulo.universe.planet import Planet
 from adsimulo.universe.system import System
-from adsimulo.utils import display
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
 class Eva:
-    seed: int
-    galaxy: Optional[Dict[str, System]] = field(default_factory=dict)
+    compendium: Optional[Compendium] = None
+
+    def __post_init__(self):
+        if self.compendium is None:
+            self.compendium = Compendium()
 
     @staticmethod
     def lore():
@@ -43,33 +55,64 @@ class Eva:
         sleep(0.3)
 
     def deploy(self) -> bool:
-        system = System(seed=self.seed)
-        habitable_planets = self._is_habitable(system)
-        if not habitable_planets:
-            print("Failed to find habitable planets...Retrying with another system")
-            sleep(0.3)
-            return False
-        self.galaxy[system.name] = system
-        for _, planet in habitable_planets.items():
-            self._adam(PIONERS, planet)
-        return True
+        self.compendium.galaxy = Galaxy()
+        nsystems = Config.rng.integers(1, Config.game_settings["SYSTEM_SAMPLE"] + 1)
+        for system in range(nsystems):
+            system = System()
+            habitable_planets = system.habitable_planets()
+            if not habitable_planets:
+                print("Failed to find habitable planets...Retrying with another system")
+                sleep(0.3)
+                continue
+            self.compendium.galaxy.systems[system.name] = system
+            Civilisation.eva = self
+            for planet in habitable_planets:
+                self._adam(settlers=Config.game_settings["SETTLERS"], planet=planet)
+        return len(self.compendium.galaxy.systems) > 0
 
-    def _is_habitable(self, system: System):
-        return system.planets
+    def _adam(self, settlers: int, planet: Planet):
+        unocuppied = filter2d(planet.civ_grid, CellState.UNOCCUPIED.value)
+        attempts = Config.rng.choice(unocuppied, min(len(unocuppied), settlers), replace=False)
+        for attempt in attempts:
+            lat = attempt[0]
+            long = attempt[1]
+            biome_coord = planet.terrain_grid[lat][long]
+            if biome_coord != Biomes.OCEAN.value:
+                if Config.game_settings["MODE"] == GameModes.PLAYER_MODE:
+                    new_civ = Civilisation.born(lat=lat, long=long, planet=planet, cpu=False)
+                    if new_civ:
+                        Config.game_settings["MODE"] = GameModes.CPU_MODE
+                else:
+                    Civilisation.born(lat=lat, long=long, planet=planet)
 
-    def _adam(self, pioners: int, planet: Planet):
-        pass
-
-    def _born_civ(self):
-        pass
-
-    def _display(self):
-        for _, system in self.galaxy.items():
-            display(system)
-
-    def loop(self, apocalypse: int):
+    def loop(self):
         year = 0
-        while year < apocalypse:
-            for _, system in self.galaxy.items():
-                display(system)
+        while year < Config.game_settings["STOP"]:
+            self.compendium.display()
+            self._progress()
+            self._populate()
+            if not Config.debug_settings["FAST"]:
+                sleep(0.1)
             year += 1
+
+    def _progress(self):
+        for _, civ in self.compendium.civilisations.copy().items():
+            if not civ.dead:
+                civ.actions()
+                civ.cadastre()
+            else:
+                raise Exception(f"WAIT! You should be dead...{civ}")
+
+    def _populate(self):
+        for _, system in self.compendium.galaxy.systems.items():
+            habitable_planets = system.habitable_planets()
+            for planet in habitable_planets:
+                if Config.rng.integers(1, 21) == 20:
+                    self._adam(settlers=roll("1d6"), planet=planet)
+                planet.age += 1
+            system.age += 1
+            self.compendium.galaxy.age += 1
+
+    def stats(self):
+        self.compendium.galaxy.stats()
+        Civilisation.stats()

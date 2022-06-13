@@ -1,20 +1,12 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-import numpy as np
-
-from adsimulo.config import PLANETARY_SYSTEMS_SAMPLE
+from adsimulo.config import Config
 from adsimulo.eva import Eva
 
 
 @dataclass
 class GameMaster:
-    mode: int
-    debug: bool
-    seed: int
-    apocalypse: int
-
-    def __post_init__(self):
-        np.random.seed(self.seed)
+    deployed_evas: list[Eva] = field(default_factory=list)
 
     def start(self):
         """Create a simulation universe and deploy Evas.
@@ -23,15 +15,22 @@ class GameMaster:
         a planetary system. Then Eva start the planetary system formation
         collapsing a nebula.
         """
-        if not self.debug:
+        debug = Config.debug_settings["DEBUG"]
+        lore = Config.debug_settings["LORE"]
+        if not debug and lore:
             Eva.lore()
-        n = 0
-        while n < PLANETARY_SYSTEMS_SAMPLE:
-            eva = Eva(seed=self.seed)
-            mission_status = eva.deploy()
-            if mission_status:
-                n += 1
+        deployed = 0
+        while deployed < Config.game_settings["TOTAL_EVAS"]:
+            eva = Eva()
+            mission_status_ok = eva.deploy()
+            if mission_status_ok:
+                deployed += 1
             else:
-                print("Discarding planetary system. Trying new one...")
+                print("Discarding galaxy. Trying new one...")
+            self.deployed_evas.append(eva)
+        if debug:
+            eva.stats()
         input("Simulation ready to start. Press any key to continue...")
-        eva.loop(self.apocalypse)
+        eva.loop()
+        if debug:
+            eva.stats()

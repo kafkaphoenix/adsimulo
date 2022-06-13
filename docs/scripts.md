@@ -7,3 +7,4 @@ added to the command while executing the program.
 - ```-d or --debug```: Enable debug mode.
 - ```-s or --seed```: Set seed to initialize the random number generator.
 - ```-y or --year```: Year when the simulation will stop.
+- ```-n or --noise```: Set noise.

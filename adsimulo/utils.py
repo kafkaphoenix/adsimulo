@@ -3,12 +3,8 @@ import os
 from termcolor import colored
 
 from adsimulo.civ.contansts import CellState
-from adsimulo.universe.constants import biome_colors
-from adsimulo.universe.system import System
-
-
-def clamp(val, nmin=0, nmax=1):
-    return max(nmin, min(val, nmax))
+from adsimulo.universe.constants import Biomes
+from adsimulo.universe.planet import Planet
 
 
 def clear_shell():
@@ -21,16 +17,13 @@ def clear_shell():
         os.system("clear")
 
 
-def display(system: System):
-    clear_shell()
-    for _, planet in system.planets.items():
-        print(f"Year {planet.age}")
-        for lat in range(planet.height):
-            for long in range(planet.width):
-                biome = planet.terrain_grid[lat][long]
-                civ = planet.civ_grid[lat][long]
-                if civ != CellState.UNOCCUPIED.value:
-                    print(colored(civ, "red"), end="")
-                else:
-                    print(colored(biome, biome_colors[biome]), end="")
-            print("")
+def draw_map(planet: Planet):
+    for lat in range(planet.height):
+        for long in range(planet.width):
+            biome = planet.terrain_grid[lat][long]
+            civ = planet.civ_grid[lat][long]
+            if civ != CellState.UNOCCUPIED.value:
+                print(colored(civ, "red"), end="")
+            else:
+                print(colored(biome, Biomes.biome_color(biome)), end="")
+        print("")

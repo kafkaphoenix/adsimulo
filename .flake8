@@ -1,0 +1,5 @@
+[flake8]
+per-file-ignores =
+    # imported but unused
+    conftest.py: F401, F403
+max-line-length = 120
